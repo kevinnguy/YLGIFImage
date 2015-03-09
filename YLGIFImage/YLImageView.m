@@ -91,12 +91,12 @@ const NSTimeInterval kMaxTimeStep = 1; // note: To avoid spiral-o-death
         self.currentFrame = nil;
         self.animatedImage = (YLGIFImage *)image;
         self.loopCountdown = self.animatedImage.loopCount ?: NSUIntegerMax;
-        [self startAnimating];
     } else {
         self.animatedImage = nil;
         [super setImage:image];
     }
-    [self.layer setNeedsDisplay];
+
+    [self resetAnimation];
 }
 
 - (void)setAnimatedImage:(YLGIFImage *)animatedImage
@@ -140,6 +140,19 @@ const NSTimeInterval kMaxTimeStep = 1; // note: To avoid spiral-o-death
     self.displayLink.paused = NO;
 }
 
+- (void)resetAnimation
+{
+    UIImage *firstFrameImage = [self.animatedImage getFrameWithIndex:0];
+    
+    [self stopAnimating];
+    
+    self.currentFrameIndex = 0;
+    self.loopCountdown = self.animatedImage.loopCount ?: NSUIntegerMax;
+    self.accumulator = 0;
+    self.currentFrame = firstFrameImage;
+    [self.layer setNeedsDisplay];
+}                                                                                                }
+
 - (void)changeKeyframe:(CADisplayLink *)displayLink
 {
     if (self.currentFrameIndex >= [self.animatedImage.images count]) {
@@ -175,15 +188,11 @@ const NSTimeInterval kMaxTimeStep = 1; // note: To avoid spiral-o-death
 - (void)didMoveToWindow
 {
     [super didMoveToWindow];
-    if (self.window) {
-        [self startAnimating];
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (!self.window) {
-                [self stopAnimating];
-            }
-        });
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!self.window) {
+            [self stopAnimating];
+        }
+    });
 }
 
 - (void)didMoveToSuperview
