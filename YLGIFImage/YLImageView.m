@@ -151,7 +151,7 @@ const NSTimeInterval kMaxTimeStep = 1; // note: To avoid spiral-o-death
     self.accumulator = 0;
     self.currentFrame = firstFrameImage;
     [self.layer setNeedsDisplay];
-}                                                                                                }
+}                                                                                                
 
 - (void)changeKeyframe:(CADisplayLink *)displayLink
 {
