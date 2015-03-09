@@ -12,6 +12,6 @@
 
 @property (nonatomic, copy) NSString *runLoopMode;
 
-- (void)resetAnimation;
+- (void)resetAnimation; // Added by kevinnguy
 
 @end
